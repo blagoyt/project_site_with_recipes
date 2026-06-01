@@ -1,0 +1,41 @@
+services:
+  frontend:
+    image: nginx:alpine
+    container_name: cooking_frontend_container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - cooking_network
+
+backend:
+    image: bt22303/cooking-backend:latest
+    container_name: cooking_backend_container
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    networks:
+      - cooking_network
+
+  db:
+    image: mysql:8.0
+    container_name: cooking_db_container
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret_password
+      MYSQL_DATABASE: cooking_db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cooking_network
+
+volumes:
+  db_data:
+
+networks:
+  cooking_network:

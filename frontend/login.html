@@ -32,19 +32,39 @@
 
     <script src="auth.js"></script>
     <script>
-        // Redirect to the main site if already authenticated
+        // Пренасочване към началната страница, ако потребителят вече е вписан
         if (isAuthenticated()) {
             window.location.href = 'index.html';
         }
 
-        document.getElementById('loginForm').addEventListener('submit', (event) => {
+        // Изпращане на данните към PHP контейнера (порт 8000)
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const username = document.getElementById('username').value.trim();
-            if (!username) return;
-            setUser(username);
-            window.location.href = 'index.html';
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) return;
+
+            try {
+                const response = await fetch('http://localhost:8000/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'login', username, password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    setUser(data.username);
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message); // Извежда съобщение от базата данни за грешна парола/потребител
+                }
+            } catch (err) {
+                alert('Грешка при връзка с бекенд контейнера.');
+            }
         });
 
+        // Вход като гост
         document.getElementById('guestBtn').addEventListener('click', () => {
             setUser('Guest');
             window.location.href = 'index.html';
