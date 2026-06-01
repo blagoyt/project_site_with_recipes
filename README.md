@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# 🍳 Уебсайт за готварски рецепти — Документация
+# Уебсайт за готварски рецепти — Документация
 
 Това е официалната документация за контейнеризирания проект **„Уебсайт за готварски рецепти“**. Приложението е реализирано като трислойна система (Frontend, Backend, Database), всяка част работи като отделна услуга в Docker среда.
 
@@ -35,7 +34,7 @@ sudo docker compose up --build
 
 Достъп до уебсайта: отворете http://localhost:8080/login.html
 
-Спиране на контейнерите:
+Спиране на контейнерите(Ctrl + C) или:
 
 ```bash
 sudo docker compose down
@@ -110,9 +109,9 @@ $host = 'db';
 
 ---
 
-## Връзки
+## 5.Връзки
 
-- GitHub (сорс код): https://github.com/blagoyt/site_with_recipes
-- Docker Hub (бекенд образ): https://hub.docker.com/r/blagoyt/cooking-backend
+- GitHub (source code): https://github.com/blagoyt/site_with_recipes
+- Docker Hub (backend образ): https://hub.docker.com/r/blagoyt/cooking-backend
 
 ---
