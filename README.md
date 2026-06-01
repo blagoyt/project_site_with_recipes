@@ -111,7 +111,7 @@ $host = 'db';
 
 ## 5.Връзки
 
-- GitHub (source code): https://github.com/blagoyt/site_with_recipes
+- GitHub (source code): https://github.com/blagoyt/project_site_with_recipes
 - Docker Hub (backend образ): https://hub.docker.com/r/bt22303/cooking-backend
 
 ---
