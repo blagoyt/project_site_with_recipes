@@ -1,9 +1,17 @@
-FROM php:8.2-apache
+FROM python:3.12-slim
 
-RUN docker-php-ext-install pdo pdo_mysql
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1
 
-COPY . /var/www/html/
+WORKDIR /app/backend
 
-RUN chown -R www-data:www-data /var/www/html
+COPY backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 80
+COPY backend/ /app/backend/
+COPY frontend/ /app/frontend/
+COPY images/ /app/images/
+
+EXPOSE 8000
+
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]

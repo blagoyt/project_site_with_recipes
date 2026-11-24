@@ -1,0 +1,4 @@
+Django>=5.2,<5.3
+PyMySQL>=1.1,<2
+cryptography>=42,<46
+whitenoise>=6.8,<7

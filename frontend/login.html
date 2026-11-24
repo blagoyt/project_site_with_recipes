@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,68 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Cooking Recipes Site</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'assets/style.css' %}">
 </head>
 <body>
-    <main class="d-flex align-items-center justify-content-center min-vh-100">
-        <div class="card p-4 shadow" style="max-width: 420px; width: 100%;">
-            <h2 class="mb-3 text-center">Welcome Back</h2>
-            <p class="text-center text-muted">Login to continue, or continue as a guest.</p>
-            <form id="loginForm">
+    <main class="auth-page">
+        <section class="auth-art">
+            <div class="auth-art-copy">
+                <p class="eyebrow">A good meal starts here</p>
+                <h1>Pull up a chair.</h1>
+                <p>Keep your favorite recipes close and find a little inspiration for whatever is in the fridge.</p>
+            </div>
+        </section>
+        <section class="auth-panel">
+            <div class="auth-content">
+                <a class="auth-brand" href="{% url 'home' %}"><span class="brand-mark">R</span> THE RECIPE TABLE</a>
+                <h2>Welcome back.</h2>
+                <p class="auth-intro">Sign in to get back to the good stuff.</p>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" required>
+                    <label for="id_username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="id_username" name="username" autocomplete="username" required>
+                    {{ form.username.errors }}
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" required>
+                    <label for="id_password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="id_password" name="password" autocomplete="current-password" required>
+                    {{ form.password.errors }}
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
-            <div class="d-flex justify-content-between mt-3">
-                <a href="register.html">Create an account</a>
-                <button id="guestBtn" class="btn btn-outline-secondary btn-sm">Continue as Guest</button>
+            <div class="auth-links">
+                <a href="{% url 'register' %}">Create an account</a>
+                <form method="post" action="{% url 'guest' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">Continue as Guest</button>
+                </form>
             </div>
-        </div>
+            </div>
+        </section>
     </main>
 
-    <script src="auth.js"></script>
-    <script>
-        if (isAuthenticated()) {
-            window.location.href = 'index.html';
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            
-            if (!username || !password) return;
-
-            try {
-                const response = await fetch('http://localhost:8000/auth.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'login', username, password })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    setUser(data.username);
-                    window.location.href = 'index.html';
-                } else {
-                    alert(data.message); 
-                }
-            } catch (err) {
-                alert('Грешка при връзка с бекенд контейнера.');
-            }
-        });
-
-        document.getElementById('guestBtn').addEventListener('click', () => {
-            setUser('Guest');
-            window.location.href = 'index.html';
-        });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

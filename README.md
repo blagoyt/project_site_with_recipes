@@ -1,117 +1,59 @@
-# Уебсайт за готварски рецепти — Документация
+# Cooking Recipes Site
 
-Това е официалната документация за контейнеризирания проект **„Уебсайт за готварски рецепти“**. Приложението е реализирано като трислойна система (Frontend, Backend, Database), всяка част работи като отделна услуга в Docker среда.
+The existing recipe pages now run as a Django application with MySQL-backed user accounts. Django's built-in authentication model hashes passwords before storing them; the raw password is never saved. Anonymous visitors can also enter as guests, with access tracked by a server-side session.
 
----
+## Run with Docker
 
-## Съдържание
+Install Docker Desktop, start it, then from the project directory run:
 
-- [Изграждане и стартиране](#изграждане-и-стартиране)
-- [Структура на проекта](#структура-на-проекта)
-- [Как работи всеки компонент](#как-работи-всеки-компонент)
-- [Комуникация между услугите](#комуникация-между-услугите)
-- [Връзки](#връзки)
-
----
-
-## 1.Изграждане и стартиране
-
-За локално стартиране използвайте Linux / WSL терминал.
-
-1. Отидете в главната папка на проекта:
-
-```bash
-cd /mnt/c/Users/user/Desktop/site_with_recipes
+```powershell
+docker compose up --build
 ```
 
-2. Изградете и стартирайте контейнерите (в реално време):
+Open [http://localhost:8080](http://localhost:8080). The root page redirects to login. Use **Continue as Guest** or register an account. Django applies its database migrations automatically when the app container starts.
 
-```bash
-sudo docker compose up --build
+Stop the containers with `Ctrl+C`, or run:
+
+```powershell
+docker compose down
 ```
 
-Командата ще изтегли необходимите образи (Nginx, MySQL), ще изгради бекенд образа според `backend/Dockerfile`, ще създаде мрежата и ще стартира услугите.
+MySQL data is kept in the `db_data` Docker volume. To remove the database and all registered accounts as well, run `docker compose down --volumes`.
 
-Достъп до уебсайта: отворете http://localhost:8080/login.html
+## Configuration
 
-Спиране на контейнерите(Ctrl + C) или:
+Compose has local-development defaults, so it starts without extra files. For custom credentials, copy `.env.example` to `.env`, replace the placeholder values, and run Compose. Keep `.env` private and do not use the development defaults on a public server.
 
-```bash
-sudo docker compose down
+## Contact email
+
+Set these values in `.env`:
+
+```dotenv
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=1
+EMAIL_USE_SSL=0
+EMAIL_HOST_USER=your-sending-email@gmail.com
+EMAIL_HOST_PASSWORD=your-gmail-app-password
+DEFAULT_FROM_EMAIL=your-sending-email@gmail.com
+CONTACT_RECIPIENT_EMAIL=your-destination-email@example.com
 ```
 
----
+For Gmail, enable two-step verification and create an App Password. Do not use the normal Gmail account password. `CONTACT_RECIPIENT_EMAIL` is the address that receives contact submissions and can be changed whenever needed.
 
-## 2.Структура на проекта
+Restart the containers after changing `.env`:
 
-Проектът следва принципа Separation of Concerns — всеки слой е в отделна папка:
-
-```
-site_with_recipes/
-├── frontend/          # Потребителски интерфейс (HTML, CSS, JS)
-│   ├── index.html
-│   ├── recipes.html
-│   ├── about.html
-│   ├── contact.html
-│   ├── login.html
-│   ├── register.html
-│   ├── style.css
-│   └── auth.js
-├── backend/           # REST API (PHP)
-│   ├── auth.php
-│   └── Dockerfile
-├── db/                # Инициализационни SQL скриптове
-│   └── init.sql
-├── compose.yml        # Docker Compose конфигурация
-└── README.md          # Тази документация
+```powershell
+docker compose down
+docker compose up --build
 ```
 
----
+## Project layout
 
-## 3.Как работи всеки компонент
+- `backend/config/`: Django settings, URL routing, and WSGI entry point
+- `backend/recipes/`: Django views and registration form
+- `frontend/`: Django-rendered templates and CSS
+- `images/`: recipe images served as static assets
+- `compose.yml`: Django and MySQL services
 
-**Фронтенд (Frontend)**
-- Технологии: HTML5, CSS3, Bootstrap 5, Vanilla JavaScript
-- Среда: Nginx (официален образ, nginx:alpine), достъпен на порт `8080`
-- Поведение: JS поема формите за вход/регистрация, формира JSON и изпраща асинхронни заявки (`fetch`) към бекенда. При успешен вход сесията се съхранява в `localStorage`.
-
-**Бекенд (Backend)**
-- Технологии: PHP 8.2 + Apache
-- Среда: Собствен Docker образ, слуша на външен порт `8000`
-- Поведение: `auth.php` предоставя REST API за регистрация и вход. Паролите се хешират с `password_hash()` при регистрация и се валидират с `password_verify()` при вход.
-
-**База данни (Database)**
-- Технологии: MySQL 8.0
-- Среда: Официален MySQL образ, вътрешен порт `3306`
-- Поведение: При първо стартиране се изпълнява `db/init.sql` за създаване на базата `cooking_db` и таблицата `users`. Данните се запазват в Docker volume (например `db_data`) за персистентност.
-
----
-
-## 4.Комуникация между услугите
-
-Комуникацията е разделена на две нива:
-
-1. Външна комуникация (Браузър ⇄ Бекенд)
-
-- Фронтенд (порт `8080`) и бекенд (порт `8000`) са различни origin-и от гледна точка на браузъра.
-- Взаимодействието се осъществява чрез HTTP `fetch` заявки. За да работят крос-домейн заявки, бекендът добавя необходимите CORS заглавки в `auth.php`.
-
-2. Вътрешна комуникация (Бекенд ⇄ База данни)
-
-- Контейнерите `backend` и `db` са свързани в затворена Docker мрежа (например `cooking_network`).
-- В конфигурацията на PHP като хост за базата се използва името на услугата, например:
-
-```php
-$host = 'db';
-```
-
-- Docker DNS разрешава името `db` към вътрешния контейнер и пренасочва трафика към MySQL на порт `3306`.
-
----
-
-## 5.Връзки
-
-- GitHub (source code): https://github.com/blagoyt/project_site_with_recipes
-- Docker Hub (backend образ): https://hub.docker.com/r/bt22303/cooking-backend
-
----
+The app uses Django's built-in `User` model as its data model, Django views as controllers, and the existing HTML pages as templates (Django's MVT pattern, analogous to MVC).

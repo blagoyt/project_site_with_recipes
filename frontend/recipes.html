@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,35 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipes - Cooking Recipes Site</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="auth.js"></script>
+    <link rel="stylesheet" href="{% static 'assets/style.css' %}">
 </head>
 <body>
-    <header class="bg-gradient text-white py-4" style="margin-bottom: 80px;">
-        <div class="container">
-            <h1 class="display-4 text-center mb-3">Our Recipes</h1>
-            <nav class="navbar navbar-expand navbar-dark justify-content-center fixed-top" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="recipes.html">Recipes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" id="logoutLink">Logout</a></li>
-                </ul>
-                <span class="navbar-text text-white ms-3" id="userBadge">Guest</span>
-            </nav>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-dark site-nav">
+            <div class="container">
+                <a class="navbar-brand" href="index.html"><span class="brand-mark">R</span> THE RECIPE TABLE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#siteNavigation" aria-controls="siteNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="siteNavigation">
+                    <div class="navbar-nav ms-lg-auto">
+                        <a class="nav-link" href="index.html">Home</a>
+                        <a class="nav-link" href="recipes.html">Recipes</a>
+                        <a class="nav-link" href="about.html">About Us</a>
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </div>
+                    <div class="d-lg-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
+                        <span class="user-greeting" id="userBadge">{% if request.user.is_authenticated %}Welcome, {{ request.user.username }}{% else %}Welcome, Guest{% endif %}</span>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="nav-link" type="submit">Log out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="page-heading container text-center">
+            <p class="eyebrow">Made for your kitchen</p>
+            <h1>Recipes for real life.</h1>
         </div>
     </header>
-    <main class="container my-5 pt-5">
+    <main class="container recipes-main">
         <section>
-            <h2 class="text-center mb-4">Delicious Recipes</h2>
-            <div class="mb-4">
-                <input type="text" id="search" class="form-control" placeholder="Search recipes...">
+            <div class="recipe-tools">
+                <p>Find something delicious to make today.</p>
+                <input type="search" id="search" class="form-control recipe-search" placeholder="Search recipes..." aria-label="Search recipes">
             </div>
             <div class="row">
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal1" style="cursor: pointer;">
-                        <img src="images/simple_pasta.jpg" class="card-img-top" alt="Simple Pasta">
+                        <img src="{% static 'images/simple_pasta.jpg' %}" class="card-img-top" alt="Simple Pasta">
                         <div class="card-body">
                             <h3 class="card-title">Simple Pasta</h3>
                             <p class="card-text">A quick and easy pasta dish perfect for busy weeknights.</p>
@@ -43,7 +57,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal2" style="cursor: pointer;">
-                        <img src="images/chicken_stir_fry.webp" class="card-img-top" alt="Chicken Stir Fry">
+                        <img src="{% static 'images/chicken_stir_fry.webp' %}" class="card-img-top" alt="Chicken Stir Fry">
                         <div class="card-body">
                             <h3 class="card-title">Chicken Stir Fry</h3>
                             <p class="card-text">Delicious and healthy stir fry with tender chicken and fresh vegetables.</p>
@@ -53,7 +67,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal3" style="cursor: pointer;">
-                        <img src="images/vegetable_salad.jpg" class="card-img-top" alt="Vegetable Salad">
+                        <img src="{% static 'images/vegetable_salad.jpg' %}" class="card-img-top" alt="Vegetable Salad">
                         <div class="card-body">
                             <h3 class="card-title">Vegetable Salad</h3>
                             <p class="card-text">Fresh, crisp and nutritious salad perfect for lunch or dinner.</p>
@@ -63,7 +77,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal4" style="cursor: pointer;">
-                        <img src="images/chocolate_cake.webp" class="card-img-top" alt="Chocolate Cake">
+                        <img src="{% static 'images/chocolate_cake.webp' %}" class="card-img-top" alt="Chocolate Cake">
                         <div class="card-body">
                             <h3 class="card-title">Chocolate Cake</h3>
                             <p class="card-text">Rich, moist, and decadent chocolate cake perfect for any occasion.</p>
@@ -73,7 +87,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal5" style="cursor: pointer;">
-                        <img src="images/fish_and_chips.webp" class="card-img-top" alt="Fish and Chips">
+                        <img src="{% static 'images/fish_and_chips.webp' %}" class="card-img-top" alt="Fish and Chips">
                         <div class="card-body">
                             <h3 class="card-title">Fish and Chips</h3>
                             <p class="card-text">Classic crispy fish with golden fries, a timeless favorite.</p>
@@ -83,7 +97,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal6" style="cursor: pointer;">
-                        <img src="images/veggie_burger.jpg" class="card-img-top" alt="Veggie Burger">
+                        <img src="{% static 'images/veggie_burger.jpg' %}" class="card-img-top" alt="Veggie Burger">
                         <div class="card-body">
                             <h3 class="card-title">Veggie Burger</h3>
                             <p class="card-text">Delicious plant-based burger that everyone will love.</p>
@@ -93,7 +107,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal7" style="cursor: pointer;">
-                        <img src="images/macaroni_and_cheese.jpg" class="card-img-top" alt="Macaroni and Cheese">
+                        <img src="{% static 'images/macaroni_and_cheese.jpg' %}" class="card-img-top" alt="Macaroni and Cheese">
                         <div class="card-body">
                             <h3 class="card-title">Macaroni & Cheese</h3>
                             <p class="card-text">Creamy comfort food at its finest.</p>
@@ -103,7 +117,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal8" style="cursor: pointer;">
-                        <img src="images/cherry_pie.jpg" class="card-img-top" alt="Cherry Pie">
+                        <img src="{% static 'images/cherry_pie.jpg' %}" class="card-img-top" alt="Cherry Pie">
                         <div class="card-body">
                             <h3 class="card-title">Cherry Pie</h3>
                             <p class="card-text">Sweet and tart pie with a golden crust.</p>
@@ -113,7 +127,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <article class="card h-100 shadow-sm recipe-card-clickable" data-bs-toggle="modal" data-bs-target="#recipeModal9" style="cursor: pointer;">
-                        <img src="images/chicken_nuggets.jpg" class="card-img-top" alt="Chicken Nuggets">
+                        <img src="{% static 'images/chicken_nuggets.jpg' %}" class="card-img-top" alt="Chicken Nuggets">
                         <div class="card-body">
                             <h3 class="card-title">Chicken Nuggets</h3>
                             <p class="card-text">Crispy golden nuggets perfect as a snack or meal.</p>
@@ -436,13 +450,11 @@
     </div>
 
     <button id="backToTop" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; display: none;">↑ Top</button>
-    <footer class="bg-dark text-white text-center py-3">
+    <footer class="site-footer">
         <p>&copy; 2026 Cooking Recipes Site</p>
     </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            requireAuth();
-
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
